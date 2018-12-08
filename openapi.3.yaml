@@ -1,0 +1,1443 @@
+---
+openapi: 3.0.2
+info:
+    title: ati.su api
+    version: '1.0'
+servers:
+    -   url: https://{environment}.ati.su
+        variables:
+            environment:
+                default: sandbox-api
+                enum:
+                    - id
+                    - sandbox-api
+x-types:
+    -   type: integer
+        format: int64
+        minimum: 0
+        example: 1
+    -   type: array
+        items:
+            type: integer
+            format: int64
+            minimum: 0
+            example: 1
+    -   type: string
+        format: uuid
+    -   type: string
+    -   type: string
+        format: email
+    -   type: number
+        format: float
+        description: 'The parameter must be specified if the street is not specified (the
+    Street parameter is null or has a length of less than 5 characters) and at least
+    one of the three conditions is met: 1. City is Moscow; 1. City is St. Petersburg;
+    1. The cities of loading and unloading are the same.
+
+'
+        example: 50.5
+    -   type: string
+        format: date-time
+        example: 2016-08-11 11:40:55 UTC
+    -   type: integer
+        format: int64
+        minimum: 0
+        description: Unix Timtestamp
+    -   type: integer
+        format: float
+        default: 0
+    -   type: integer
+        format: int32
+        minimum: 0
+        maximum: 100
+        default: 0
+    -   type: integer
+        format: int64
+        minimum: 0
+    -   type: boolean
+        default: true
+    -   type: boolean
+        default: false
+    -   type: string
+        enum:
+            - OR
+            - AND
+        default: OR
+    -   type: integer
+        minimum: 1
+        maximum: 99
+        default: 1
+    -   type: integer
+        minimum: -99
+        maximum: 999
+        example: 36
+    -   type: integer
+        format: int32
+        minimum: 0
+        maximum: 9999
+        example: 1000
+    -   type: integer
+        format: int32
+        minimum: 0
+        maximum: 9999
+        description: Сubic meters
+        example: 50
+    -   type: integer
+        format: int32
+        minimum: 0
+        maximum: 9
+        description: The degree of danger of cargo
+        default: 0
+    -   type: integer
+        format: float
+        default: 0
+        minimum: 0
+        maximum: 50
+    -   type: integer
+        format: float
+        default: 0
+        minimum: 0
+        maximum: 50
+    -   type: integer
+        format: float
+        default: 0
+        minimum: 0
+        maximum: 50
+    -   type: boolean
+        default: false
+    -   type: boolean
+        default: false
+    -   type: boolean
+        default: false
+    -   type: string
+        maxLength: 50
+        description: Required if CargoTypeId equal 59
+        example: Documents
+    -   type: integer
+        minimum: 0
+        maximum: 9999
+        default: 0
+    -   type: integer
+        minimum: 0
+        maximum: 9999
+        default: 0
+    -   type: integer
+        minimum: 1
+        maximum: 3
+        description: '1. only by machine 1. single or partial load 1. only partial load
+
+'
+        example: 1
+    -   type: boolean
+        default: false
+    -   type: number
+        format: float
+        description: 'The parameter must be specified if the street is not specified (the
+    Street parameter is null or has a length of less than 5 characters) and at least
+    one of the three conditions is met: 1. City is Moscow; 1. City is St. Petersburg;
+    1. The cities of loading and unloading are the same.
+
+'
+        example: 50.5
+        minimum: -90
+        maximum: 90
+    -   type: number
+        format: float
+        description: 'The parameter must be specified if the street is not specified (the
+    Street parameter is null or has a length of less than 5 characters) and at least
+    one of the three conditions is met: 1. City is Moscow; 1. City is St. Petersburg;
+    1. The cities of loading and unloading are the same.
+
+'
+        example: 50.5
+        minimum: -180
+        maximum: 180
+    -   type: array
+        description: http://api.ati.su/help/32018170.html
+        items:
+            type: integer
+        minItems: 1
+        maxItems: 10
+        example:
+            - 5
+            - 6
+            - 7
+    -   description: Required if ViewRate is empty
+        type: string
+        maxLength: 5
+        pattern: "^\\d((\\.|\\,)[0-9]{1,2})?$"
+        default: 0
+    -   security:
+            -   OAuth2: []
+paths:
+    "/apps/{client_id}":
+        get:
+            tags:
+                - Auth
+            summary: Get access token
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        text/html:
+                            schema:
+                                type: string
+            parameters:
+                -   name: client_id
+                    in: path
+                    description: Software token
+                    required: true
+                    schema:
+                        type: string
+    "/account":
+        get:
+            security:
+                -   OAuth2: []
+            tags:
+                - Account
+            summary: Получение информации об аккаунте
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                "$ref": "#/components/schemas/Account"
+    "/loads":
+        post:
+            security:
+                -   OAuth2: []
+            tags:
+                - Load
+            summary: Добавление груза
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            "$ref": "#/components/schemas/AddLoad"
+            responses:
+                '200':
+                    description: OK
+    "/dictionaries/ownerships":
+        get:
+            tags:
+                - Dictionary
+            summary: Выводит список организационно-правовых форм
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/OwnerShip"
+    "/dictionaries/regions":
+        get:
+            tags:
+                - Dictionary
+            summary: Выводит список регионов
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/Region"
+    "/dictionaries/countries":
+        get:
+            tags:
+                - Dictionary
+            summary: Выводит список стран
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/Country"
+    "/dictionaries/cargoTypes":
+        get:
+            tags:
+                - Dictionary
+            summary: Выводит список наименований грузов
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/CargoType"
+    "/dictionaries/packTypes":
+        get:
+            tags:
+                - Dictionary
+            summary: Выводит список наименований упаковок
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/PackType"
+    "/dictionaries/cities":
+        get:
+            security:
+                -   OAuth2: []
+            tags:
+                - Dictionary
+            summary: Получение списка всех городов с возможностью поиска по префиксу имени
+                или по id городов.
+            parameters:
+                -   name: name
+                    in: query
+                    schema:
+                        type: string
+                    description: Слово для поиска в поле FullName
+                -   name: ids
+                    in: query
+                    schema:
+                        type: array
+                        items:
+                            type: integer
+                            format: int64
+                            minimum: 0
+                            example: 1
+                    description: 'Список id городов, которые нужно вернуть Не учитывается, если
+          задан `name`
+
+'
+                -   name: includedFields
+                    in: query
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    description: 'Список полей, которые нужно вернуть. Поле `CityId` возвращается
+          всегда
+
+'
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/City"
+    "/dictionaries/cities/{id}/":
+        get:
+            tags:
+                - Dictionary
+            summary: Получение конкретного города по его идентификатору.
+            parameters:
+                -   name: id
+                    in: path
+                    schema:
+                        type: string
+                    description: Идентификатор города
+                    required: true
+                -   name: count
+                    in: query
+                    schema:
+                        type: string
+                        default: 5
+                    description: Количество БКГ
+                -   name: radius
+                    in: query
+                    schema:
+                        type: string
+                        default: 200
+                    description: Радиус в км
+                -   name: largeCityCount
+                    in: query
+                    schema:
+                        type: string
+                        default: 3
+                    description: размер БКГ
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                "$ref": "#/components/schemas/City"
+                '404':
+                    description: Город не найден
+    "/dictionaries/cities/{id}":
+        get:
+            tags:
+                - Dictionary
+            summary: Получение конкретного города по его идентификатору.
+            parameters:
+                -   name: id
+                    in: path
+                    schema:
+                        type: string
+                    description: Идентификатор города
+                    required: true
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                "$ref": "#/components/schemas/City"
+    "/dictionaries/carTypes":
+        get:
+            tags:
+                - Dictionary
+            summary: Выводит список наименований кузовов
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/CarType"
+    "/dictionaries/loadingTypes":
+        get:
+            tags:
+                - Dictionary
+            summary: Выводит список вариантов загрузки
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/LoadingType"
+    "/dictionaries/unloadingTypes":
+        get:
+            tags:
+                - Dictionary
+            summary: Выводит список вариантов разгрузки
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/UnloadingType"
+    "/dictionaries/moneyTypes":
+        get:
+            tags:
+                - Dictionary
+            summary: Выводит список вариантов оплаты
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/MoneyType"
+    "/dictionaries/currencyTypes":
+        get:
+            tags:
+                - Dictionary
+            summary: Выводит список валют
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    "$ref": "#/components/schemas/CurrencyType"
+components:
+    schemas:
+        AddLoad:
+            type: object
+            required:
+                - ContactId1
+                - Loading
+                - Unloading
+                - Cargo
+                - Transport
+                - Payment
+            properties:
+                ContactId1:
+                    "$ref": "#/components/schemas/Contact"
+                ContactId2:
+                    "$ref": "#/components/schemas/Contact"
+                Note:
+                    type: string
+                FirstDate:
+                    type: string
+                    format: date-time
+                    example: 2016-08-11 11:40:55 UTC
+                    description: |
+                        Date with time (00:00:00) The minimum value is equal to the current date
+                          If the value of the DateType parameter is 0, the valid value of the field is the current date
+                          If the value of the DateType parameter is 1, the valid value of the field is from the current date to 60 days ahead
+                          If the value of the DateType parameter is 2, the valid value of the field is the current date
+                          If the value of the DateType parameter is 3, FirstDate should be the current date value or be absent
+                LastDate:
+                    type: string
+                    format: date-time
+                    example: 2016-08-11 11:40:55 UTC
+                    description: |
+                        Date with time (00:00:00) The minimum value is equal to the value of the parameter FirstDate
+                          If the value of the DateType parameter is 0, the valid value of the field is from the current date to 1 day ahead
+                          If the value of the DateType parameter is 1, the valid value of the field is from the date in the FirstDate parameter up to 9 days ahead
+                          If the value of the DateType parameter is 2, this field is calculated automatically using the FirstDate formula + 2 months, the transmitted value is ignored
+                          If the value of the DateType parameter is 3, LastDate is automatically set to the value + 2 days from the current date, the transmitted value is ignored
+                DateType:
+                    type: integer
+                    minimum: 0
+                    maximum: 3
+                    description: |
+                        `Values`:
+                          0 - ready to unloading
+                          1 - from X to Y
+                          2 - constantly
+                          3 - no load, bid request
+                PeriodicityId:
+                    type: integer
+                    format: int32
+                    enum:
+                        - 0
+                        - 1
+                        - 100
+                    description: 'If the DateType parameter is not equal to 2, PeriodicityId
+            should be equal to 0. Otherwise, PeriodicityId can take the following
+            values: * 1 - daily * 100 - on working days
+
+'
+                Krugoreis:
+                    type: boolean
+                Loading:
+                    "$ref": "#/components/schemas/LoadingUnloading"
+                ExtraPoints:
+                    type: array
+                    items:
+                        "$ref": "#/components/schemas/ExtraPoint"
+                Unloading:
+                    "$ref": "#/components/schemas/LoadingUnloading"
+                Cargo:
+                    "$ref": "#/components/schemas/Cargo"
+                Transport:
+                    "$ref": "#/components/schemas/Transport"
+                Payment:
+                    "$ref": "#/components/schemas/Payment"
+                Stealth:
+                    "$ref": "#/components/schemas/Stealth"
+                Boards:
+                    type: array
+                    items:
+                        "$ref": "#/components/schemas/LoadBoard"
+                PriorityView:
+                    "$ref": "#/components/schemas/PriorityView"
+                LoadMeta:
+                    "$ref": "#/components/schemas/LoadMeta"
+        Account:
+            type: object
+            properties:
+                AccountId:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                FirmName:
+                    type: string
+                AdminEmail:
+                    type: string
+                    format: email
+                Brand:
+                    type: string
+                Ownership:
+                    type: string
+                OwnershipId:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Location:
+                    "$ref": "#/components/schemas/City"
+                Address:
+                    type: string
+                Inn:
+                    type: string
+                FullFirmName:
+                    type: string
+                ClaimsSum:
+                    type: integer
+                    format: float
+                    default: 0
+                ClaimsCount:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                RecommendationCount:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                BadPartnerMentionsCount:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                BadPartnerFirmsCount:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                TimeZoneMinutes:
+                    type: integer
+                    format: int64
+                    minimum: -86400
+                    maximum: 86400
+                Contacts:
+                    type: array
+                    items:
+                        "$ref": "#/components/schemas/Contact"
+                Passport:
+                    "$ref": "#/components/schemas/Passport"
+        Board:
+            type: object
+            properties:
+                ID:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Name:
+                    type: string
+                Color:
+                    type: string
+                CreatedOn:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    description: Unix Timtestamp
+                ViewOnlyOwn:
+                    type: boolean
+                UpdatedOn:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    description: Unix Timtestamp
+                LogoUrl:
+                    type: string
+                BoardType:
+                    type: string
+                    enum:
+                        - loads
+                        - trucks
+                BoardExchangeDirection:
+                    type: string
+                    enum:
+                        - input
+                        - output
+                        - exchange
+                    description: 'input - loads for you. Your customers place cargo on site;
+            output - your cargo for carriers; exchange - the exchange of goods between
+            equal participants of the site
+
+'
+                OwnerFirm:
+                    type: integer
+        Contact:
+            type: object
+            properties:
+                Id:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Name:
+                    type: string
+                Telephone:
+                    type: string
+                Email:
+                    type: string
+                    format: email
+                Icq:
+                    type: string
+                Mobile:
+                    type: string
+                SkypeName:
+                    type: string
+                Fax:
+                    type: string
+                Location:
+                    "$ref": "#/components/schemas/City"
+                IsEmailVisibled:
+                    type: boolean
+                IsVisibled:
+                    type: boolean
+                Note:
+                    type: string
+        Passport:
+            type: object
+            properties:
+                TotalScore:
+                    type: integer
+                    format: float
+                    default: 0
+                ATIDataMatchPoint:
+                    type: integer
+                    format: float
+                    default: 0
+                AccountLifetimePoint:
+                    type: integer
+                    format: float
+                    default: 0
+                BusinessActivityPoint:
+                    type: integer
+                    format: float
+                    default: 0
+                RoundTablePoint:
+                    type: integer
+                    format: float
+                    default: 0
+                ClaimPoint:
+                    type: integer
+                    format: float
+                    default: 0
+                ProfActivityPoint:
+                    type: integer
+                    format: float
+                    default: 0
+                ATIAdministrationPoint:
+                    type: integer
+                    format: float
+                    default: 0
+                ClonesPoint:
+                    type: integer
+                    format: float
+                    default: 0
+                EGRPoint:
+                    type: integer
+                    format: float
+                    default: 0
+                MassRegistrationPoint:
+                    type: integer
+                    format: float
+                    default: 0
+                MassFounderPoint:
+                    type: integer
+                    format: float
+                    default: 0
+                FirmLifetimePoint:
+                    type: integer
+                    format: float
+                    default: 0
+                Status:
+                    type: integer
+                    minimum: 0
+                    maximum: 7
+                    description: |
+                        `Values`:
+                          0 - Gray stars;
+                          1 - Green stars;
+                          2 - Yellow stars;
+                          3 - Red stars;
+                          4 - ATI Partner;
+                          5 - ATI employee;
+                          6 - State organ;
+                          7 - Round table.
+                StatusDescription:
+                    type: string
+        Cargo:
+            description: Documentation - http://api.ati.su/help/32018182.html
+            type: object
+            required:
+                - CargoTypeId
+                - DogruzType
+            properties:
+                Weight:
+                    type: integer
+                    format: int32
+                    minimum: 0
+                    maximum: 9999
+                    example: 1000
+                Volume:
+                    type: integer
+                    format: int32
+                    minimum: 0
+                    maximum: 9999
+                    description: Сubic meters
+                    example: 50
+                ADR:
+                    type: integer
+                    format: int32
+                    minimum: 0
+                    maximum: 9
+                    description: The degree of danger of cargo
+                    default: 0
+                CargoTypeId:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                CargoType:
+                    type: string
+                    maxLength: 50
+                    description: Required if CargoTypeId equal 59
+                    example: Documents
+                PackType:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                    default: 0
+                PalletCount:
+                    type: integer
+                    minimum: 0
+                    maximum: 9999
+                    default: 0
+                BeltCount:
+                    type: integer
+                    minimum: 0
+                    maximum: 9999
+                    default: 0
+                DogruzType:
+                    type: integer
+                    minimum: 1
+                    maximum: 3
+                    description: '1. only by machine 1. single or partial load 1. only partial
+            load
+
+'
+                    example: 1
+                SborGruz:
+                    type: boolean
+                    default: false
+                Size:
+                    "$ref": "#/components/schemas/Size"
+        ExtraPoint:
+            type: object
+            required:
+                - CityId
+                - PointType
+            properties:
+                CityId:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                PointType:
+                    type: integer
+                    enum:
+                        - 1
+                        - 2
+                        - 3
+                    description: |
+                        Value:
+                         * `1` - Loading
+                         * `2` - UnLoading
+                         * `3` - Custom
+                Latitude:
+                    type: number
+                    format: float
+                    description: 'The parameter must be specified if the street is not specified
+            (the Street parameter is null or has a length of less than 5 characters)
+            and at least one of the three conditions is met: 1. City is Moscow; 1.
+            City is St. Petersburg; 1. The cities of loading and unloading are the
+            same.
+
+'
+                    example: 50.5
+                    minimum: -90
+                    maximum: 90
+                Longitude:
+                    type: number
+                    format: float
+                    description: 'The parameter must be specified if the street is not specified
+            (the Street parameter is null or has a length of less than 5 characters)
+            and at least one of the three conditions is met: 1. City is Moscow; 1.
+            City is St. Petersburg; 1. The cities of loading and unloading are the
+            same.
+
+'
+                    example: 50.5
+                    minimum: -180
+                    maximum: 180
+                Street:
+                    type: string
+        LoadingUnloading:
+            type: object
+            required:
+                - CityId
+            properties:
+                CityId:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Latitude:
+                    type: number
+                    format: float
+                    description: 'The parameter must be specified if the street is not specified
+            (the Street parameter is null or has a length of less than 5 characters)
+            and at least one of the three conditions is met: 1. City is Moscow; 1.
+            City is St. Petersburg; 1. The cities of loading and unloading are the
+            same.
+
+'
+                    example: 50.5
+                    minimum: -90
+                    maximum: 90
+                Longitude:
+                    type: number
+                    format: float
+                    description: 'The parameter must be specified if the street is not specified
+            (the Street parameter is null or has a length of less than 5 characters)
+            and at least one of the three conditions is met: 1. City is Moscow; 1.
+            City is St. Petersburg; 1. The cities of loading and unloading are the
+            same.
+
+'
+                    example: 50.5
+                    minimum: -180
+                    maximum: 180
+                Street:
+                    type: string
+                TimeStart:
+                    type: string
+                    format: date-time
+                    example: 2016-08-11 11:40:55 UTC
+                TimeEnd:
+                    type: string
+                    format: date-time
+                    example: 2016-08-11 11:40:55 UTC
+                LargeCities:
+                    type: array
+                    description: http://api.ati.su/help/32018170.html
+                    items:
+                        type: integer
+                    minItems: 1
+                    maxItems: 10
+                    example:
+                        - 5
+                        - 6
+                        - 7
+        Size:
+            type: object
+            properties:
+                Length:
+                    type: integer
+                    format: float
+                    default: 0
+                    minimum: 0
+                    maximum: 50
+                Width:
+                    type: integer
+                    format: float
+                    default: 0
+                    minimum: 0
+                    maximum: 50
+                Height:
+                    type: integer
+                    format: float
+                    default: 0
+                    minimum: 0
+                    maximum: 50
+                LengthHighlight:
+                    type: boolean
+                    default: false
+                WidthHighlight:
+                    type: boolean
+                    default: false
+                HeightHighlight:
+                    type: boolean
+                    default: false
+        Transport:
+            type: object
+            required:
+                - CarType
+            properties:
+                CarType:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
+                        minimum: 0
+                        example: 1
+                    description: "Bit sum id bodies \n"
+                LoadingType:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
+                        minimum: 0
+                        example: 1
+                    description: Bit sum id loadings
+                LoadingLogicalOperator:
+                    type: string
+                    enum:
+                        - OR
+                        - AND
+                    default: OR
+                UnloadingType:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
+                        minimum: 0
+                        example: 1
+                    description: 'Bit sum id unloadings
+
+'
+                UnloadingLogicalOperator:
+                    type: string
+                    enum:
+                        - OR
+                        - AND
+                    default: OR
+                TrucksQuantity:
+                    type: integer
+                    minimum: 1
+                    maximum: 99
+                    default: 1
+                TemperatureFrom:
+                    type: integer
+                    minimum: -99
+                    maximum: 999
+                    example: 36
+                TemperatureTo:
+                    type: integer
+                    minimum: -99
+                    maximum: 999
+                    example: 36
+                Stsepka:
+                    type: boolean
+                    default: false
+                Pnevmohod:
+                    type: boolean
+                    default: false
+                Koniki:
+                    type: boolean
+                    default: false
+                TIR:
+                    type: boolean
+                    default: false
+                CMR:
+                    type: boolean
+                    default: false
+                T1:
+                    type: boolean
+                    default: false
+                SanPassport:
+                    type: boolean
+                    default: false
+        Payment:
+            type: object
+            properties:
+                MoneyType:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                    default: 22
+                CurrencyId:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                RateSum:
+                    type: integer
+                    format: float
+                    default: 0
+                SumWithNDS:
+                    type: integer
+                    format: float
+                    default: 0
+                SumWithoutNDS:
+                    type: integer
+                    format: float
+                    default: 0
+                PrepayPercent:
+                    type: integer
+                    format: int32
+                    minimum: 0
+                    maximum: 100
+                    default: 0
+                PayDays:
+                    type: integer
+                    minimum: 0
+                    maximum: 99
+                    default: 0
+                FixedRate:
+                    type: boolean
+                    default: true
+                Torg:
+                    type: boolean
+                    default: false
+                PrepayPercentEnabled:
+                    type: boolean
+                    default: false
+                DirectContract:
+                    type: boolean
+                    default: false
+                OnUnloading:
+                    type: boolean
+                    default: false
+                PayDaysEnabled:
+                    type: boolean
+                    default: false
+        Stealth:
+            type: object
+            properties:
+                ListIdToHide:
+                    type: string
+                    format: uuid
+                FirmRegDateToHide:
+                    type: string
+                    format: date-time
+                    example: 2016-08-11 11:40:55 UTC
+                ScoreToHide:
+                    type: integer
+                    format: float
+                    default: 0
+        LoadBoard:
+            type: object
+            required:
+                - BoardId
+            properties:
+                BoardId:
+                    type: string
+                PublicationTime:
+                    type: string
+                    format: date-time
+                    example: 2016-08-11 11:40:55 UTC
+                    description: It is taken into account if `PublicationOption` is 6.
+                PublicationOption:
+                    type: integer
+                    enum:
+                        - 0
+                        - 1
+                        - 2
+                        - 3
+                        - 4
+                        - 5
+                        - 6
+                    description: "`Values`: * 0 - immediately * 1 - in 15 minutes * 2 - in 30
+            minutes * 3 - in an hour * 4 - in 3 hours * 5 - after 6 hours * 6 - specify
+            the exact time\n"
+                IsPublished:
+                    type: boolean
+                    readOnly: true
+        PriorityView:
+            type: object
+            properties:
+                DailyLimit:
+                    description: Required if ViewRate is empty
+                    type: string
+                    maxLength: 5
+                    pattern: "^\\d((\\.|\\,)[0-9]{1,2})?$"
+                    default: 0
+                IsForPayedOnly:
+                    type: boolean
+                OrderLimit:
+                    description: Required if ViewRate is empty
+                    type: string
+                    maxLength: 5
+                    pattern: "^\\d((\\.|\\,)[0-9]{1,2})?$"
+                    default: 0
+                ViewRate:
+                    type: integer
+                    format: float
+                    minimum: 0.3
+                    maximum: 99999
+                MoneySpentPerDay:
+                    type: integer
+                    readOnly: true
+                MoneySpentPerOrder:
+                    type: integer
+                    readOnly: true
+        LoadMeta:
+            type: object
+            properties:
+                LoadMetaId:
+                    type: string
+                    format: uuid
+                MetaData:
+                    type: string
+        OwnerShip:
+            readOnly: true
+            type: object
+            description: Организационно-правовая форма
+            properties:
+                Id:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Name:
+                    type: string
+                    example: ООО, ЗАО, ИП и др.
+        City:
+            readOnly: true
+            type: object
+            properties:
+                CityId:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                RegionId:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                CountryId:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                CityName:
+                    type: string
+                RegionName:
+                    type: string
+                CountryName:
+                    type: string
+                CountryCodeName:
+                    type: string
+                FullName:
+                    type: string
+                ShortName:
+                    type: string
+                IsRegionalCenter:
+                    type: boolean
+                FullNameEng:
+                    type: string
+                ShortNameEng:
+                    type: string
+                CitySize:
+                    type: integer
+                    minimum: 0
+                    maximum: 6
+                    description: '0. system fail 1. to 10.000; 2. from 10.000 to 50.000; 3.
+            from 50.000 to 100.000; 4. from 100.000 to 500.000; 5. from 500.000 to
+            1.000.000;  6. over 1.000.000.
+
+'
+                Longitude:
+                    type: number
+                    format: float
+                    description: 'The parameter must be specified if the street is not specified
+            (the Street parameter is null or has a length of less than 5 characters)
+            and at least one of the three conditions is met: 1. City is Moscow; 1.
+            City is St. Petersburg; 1. The cities of loading and unloading are the
+            same.
+
+'
+                    example: 50.5
+                    minimum: -180
+                    maximum: 180
+                Latitude:
+                    type: number
+                    format: float
+                    description: 'The parameter must be specified if the street is not specified
+            (the Street parameter is null or has a length of less than 5 characters)
+            and at least one of the three conditions is met: 1. City is Moscow; 1.
+            City is St. Petersburg; 1. The cities of loading and unloading are the
+            same.
+
+'
+                    example: 50.5
+                    minimum: -90
+                    maximum: 90
+        Region:
+            readOnly: true
+            type: object
+            properties:
+                Id:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                CountryId:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Name:
+                    type: string
+                    example: Московская область
+                NameEng:
+                    type: string
+                    example: Moskovskaya oblast'
+                RegionClearName:
+                    type: string
+                    example: Московская
+                RegionTypeAbbr:
+                    type: string
+                    example: обл.
+        Country:
+            readOnly: true
+            type: object
+            properties:
+                Id:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Name:
+                    type: string
+                    example: Россия
+                NameEng:
+                    type: string
+                    example: Russia
+                InterShortName:
+                    type: string
+                    example: RUS
+        CarType:
+            type: object
+            properties:
+                Id:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Name:
+                    type: string
+                    example: контейнер
+                NameEng:
+                    type: string
+                    example: container
+                ShortName:
+                    type: string
+                    example: конт.
+                ShortNameEng:
+                    type: string
+                    example: cont
+                TypeId:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 100
+                Position:
+                    type: integer
+                    example: 20
+        CargoType:
+            readOnly: true
+            type: object
+            properties:
+                Id:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Name:
+                    type: string
+                    example: Алкогольные напитки
+        PackType:
+            readOnly: true
+            type: object
+            properties:
+                Id:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Id2:
+                    type: string
+                    format: uuid
+                Name:
+                    type: string
+                    example: россыпью
+                ShortName:
+                    type: string
+                    example: россып
+                NameEng:
+                    type: string
+                    example: loose
+        LoadingType:
+            readOnly: true
+            type: object
+            description: Вариант загрузки
+            properties:
+                Id:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Name:
+                    type: string
+                    example: верхняя
+        UnloadingType:
+            readOnly: true
+            type: object
+            description: Вариант разгрузки
+            properties:
+                Id:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Name:
+                    type: string
+                    example: боковая
+        MoneyType:
+            readOnly: true
+            type: object
+            description: Вариант оплаты
+            properties:
+                Id:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Name:
+                    type: string
+                    example: нал
+                NameEng:
+                    type: string
+                    example: cash
+        CurrencyType:
+            readOnly: true
+            type: object
+            description: Валюта
+            properties:
+                Id:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 1
+                Name:
+                    type: string
+                    example: руб
+                NameEng:
+                    type: string
+                    example: rub
+                Modifier:
+                    type: integer
+                    example: 1
+                CurrencyIdPerKm:
+                    type: integer
+                    example: 8
+                Iso4217Code:
+                    type: string
+                    example: RUB
+                Iso4217DigitalCode:
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    example: 643
+    securitySchemes:
+        OAuth2:
+            type: oauth2
+            description: "[Описание](https://api.ati.su/help/#id-ДокументацияAPI-Какполучитьaccess_token)\n"
+            flows:
+                implicit:
+                    authorizationUrl: https://id.ati.su/oauth/
+                    scopes: {}
